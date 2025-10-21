@@ -23,7 +23,7 @@
     "DamageBonusPercentValue": 0.0,
     "DamageBonusPercentValue2": 0.0,
     "DamageBonusPercentValue3": 0.0,
-    "Description": "Taunt on you increases resistances by 5% per charge. Taunt on enemies reduces resistances by 5% per charge.",
+    "Description": "Taunt on you increases All Resistances by 5% per charge. Taunt on enemies reduces All Resistances by 5% per charge.",
     "HealFlatBonus": 0,
     "HealPercentBonus": 0.0,
     "HealReceivedFlatBonus": 0,

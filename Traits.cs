@@ -73,21 +73,19 @@ namespace Albedo
             if (_trait == trait0)
             {
                 // trait0:
+                // At the start of combat, gain 26 Block and 1 foritfy.
                 LogDebug($"Handling Trait {traitId}: {traitName}");
-                _character.SetAuraTrait(_character, "evade", 1);
+                _character.SetAuraTrait(_character, "block", 26);
+                _character.SetAuraTrait(_character, "fortify", 1);
+                _character.HeroItem?.ScrollCombatText(traitName, Enums.CombatScrollEffectType.Trait);
             }
 
 
             else if (_trait == trait2a)
             {
                 // trait2a
-                if (CanIncrementTraitActivations(traitId) && _castedCard.HasCardType(Enums.CardType.Defense))// && MatchManager.Instance.energyJustWastedByHero > 0)
-                {
-                    LogDebug($"Handling Trait {traitId}: {traitName}");
-                    // _character?.ModifyEnergy(1);
-                    // DrawCards(1);
-                    IncrementTraitActivations(traitId);
-                }
+                // Block charges applied +1 for every 3 Dark on you.
+
             }
 
 
@@ -96,19 +94,30 @@ namespace Albedo
             {
                 // trait2b:
                 LogDebug($"Handling Trait {traitId}: {traitName}");
-
+                // Taunt on you increases resistances by 5% per charge. Taunt on enemies reduces resistances by 5% per charge.
+                // Handled in GACM
             }
 
             else if (_trait == trait4a)
             {
                 // trait 4a;
-
+                // Sharp +1. When you play a Melee Attack, gain 1 Sharp.
                 LogDebug($"Handling Trait {traitId}: {traitName}");
+                if (_castedCard != null && _castedCard.CardType == Enums.CardType.Melee_Attack)
+                {
+                    _character.SetAuraTrait(_character, "sharp", 1);
+                    if (_character.HeroItem != null)
+                    {
+                        _character.HeroItem.ScrollCombatText(traitName, Enums.CombatScrollEffectType.Trait);
+                        EffectsManager.Instance.PlayEffectAC("sharp", isHero: true, _character.HeroItem.CharImageT, flip: false);
+                    }
+                }
             }
 
             else if (_trait == trait4b)
             {
                 // trait 4b:
+                // Taunt on heroes and monsters can Stack to 10. Shield of Nazarick increases Block charges for every 2 Dark on you.
                 LogDebug($"Handling Trait {traitId}: {traitName}");
             }
 
@@ -150,54 +159,30 @@ namespace Albedo
                 // trait2a:
 
                 // trait2b:
-
+                // Taunt on you increases resistances by 5% per charge. Taunt on enemies reduces resistances by 5% per charge.
                 // trait 4a;
 
                 // trait 4b:
-
-                case "evasion":
-                    traitOfInterest = trait2a;
-                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.ThisHero))
-                    {
-                    }
-                    break;
-                case "stealth":
+                // Taunt on heroes and monsters can Stack to 10
+                case "taunt":
                     traitOfInterest = trait2b;
                     if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Heroes))
                     {
+                        __result = AtOManager.Instance.GlobalAuraCurseModifyResist(__result, Enums.DamageType.All, 0, 5f);
+                    }
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Monsters))
+                    {
+                        __result = AtOManager.Instance.GlobalAuraCurseModifyResist(__result, Enums.DamageType.All, 0, -5f);
+                    }
+                    traitOfInterest = trait4b;
+                    if (IfCharacterHas(characterOfInterest, CharacterHas.Trait, traitOfInterest, AppliesTo.Global))
+                    {
+                        __result.GainCharges = true;
+                        __result.MaxCharges = __result.MaxMadnessCharges = 10;
                     }
                     break;
             }
         }
-
-        // [HarmonyPrefix]
-        // [HarmonyPatch(typeof(Character), "HealAuraCurse")]
-        // public static void HealAuraCursePrefix(ref Character __instance, AuraCurseData AC, ref int __state)
-        // {
-        //     LogInfo($"HealAuraCursePrefix {subclassName}");
-        //     string traitOfInterest = trait4b;
-        //     if (IsLivingHero(__instance) && __instance.HaveTrait(traitOfInterest) && AC == GetAuraCurseData("stealth"))
-        //     {
-        //         __state = Mathf.FloorToInt(__instance.GetAuraCharges("stealth") * 0.25f);
-        //         // __instance.SetAuraTrait(null, "stealth", 1);
-
-        //     }
-
-        // }
-
-        // [HarmonyPostfix]
-        // [HarmonyPatch(typeof(Character), "HealAuraCurse")]
-        // public static void HealAuraCursePostfix(ref Character __instance, AuraCurseData AC, int __state)
-        // {
-        //     LogInfo($"HealAuraCursePrefix {subclassName}");
-        //     string traitOfInterest = trait4b;
-        //     if (IsLivingHero(__instance) && __instance.HaveTrait(traitOfInterest) && AC == GetAuraCurseData("stealth") && __state > 0)
-        //     {
-        //         // __state = __instance.GetAuraCharges("stealth");
-        //         __instance.SetAuraTrait(null, "stealth", __state);
-        //     }
-
-        // }
 
 
 
@@ -229,54 +214,25 @@ namespace Albedo
             isDamagePreviewActive = false;
         }
 
-        // [HarmonyPostfix]
-        // [HarmonyPatch(typeof(Character), nameof(Character.SetEvent))]
-        // public static void SetEventPostfix(
-        //     Enums.EventActivation theEvent,
-        //     Character target = null,
-        //     int auxInt = 0,
-        //     string auxString = "")
-        // {
-        //     if (theEvent == Enums.EventActivation.BeginTurnCardsDealt && AtOManager.Instance.TeamHaveTrait(trait2b))
-        //     {
-        //         string cardToPlay = "tacticianexpectedprophecy";
-        //         PlayCardForFree(cardToPlay);
-        //     }
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Character), nameof(Character.GetTraitAuraCurseModifiers))]
+        public static void GetTraitAuraCurseModifiersPostfix(ref Character __instance, ref Dictionary<string, int> __result)
+        {
+            // trait2a:
+            // Block charges applied +1 for every 3 Dark on you.
+            // trait4b Shield of Nazarick increases Block charges for every 2 Dark on you.
 
-        // }
+            string traitOfInterest = trait2a;
+            if (IsLivingHero(__instance) && __instance.HaveTrait(traitOfInterest))
+            {
+                LogDebug($"Handling Trait {traitOfInterest}");
+                int nDark = __instance.EffectCharges("dark");
+                int bonusBlockCharges = nDark / (__instance.HaveTrait(trait4b) ? 2 : 3);
 
+                if (bonusBlockCharges != 0) { __result["block"] = bonusBlockCharges; }
+            }
 
-
-
-
-        // [HarmonyPostfix]
-        // [HarmonyPatch(typeof(CardData), nameof(CardData.SetDescriptionNew))]
-        // public static void SetDescriptionNewPostfix(ref CardData __instance, bool forceDescription = false, Character character = null, bool includeInSearch = true)
-        // {
-        //     // LogInfo("executing SetDescriptionNewPostfix");
-        //     if (__instance == null)
-        //     {
-        //         LogDebug("Null Card");
-        //         return;
-        //     }
-        //     if (!Globals.Instance.CardsDescriptionNormalized.ContainsKey(__instance.Id))
-        //     {
-        //         LogError($"missing card Id {__instance.Id}");
-        //         return;
-        //     }
-
-
-        //     if (__instance.CardName == "Mind Maze")
-        //     {
-        //         StringBuilder stringBuilder1 = new StringBuilder();
-        //         LogDebug($"Current description for {__instance.Id}: {stringBuilder1}");
-        //         string currentDescription = Globals.Instance.CardsDescriptionNormalized[__instance.Id];
-        //         stringBuilder1.Append(currentDescription);
-        //         // stringBuilder1.Replace($"When you apply", $"When you play a Mind Spell\n or apply");
-        //         stringBuilder1.Replace($"Lasts one turn", $"Lasts two turns");
-        //         BinbinNormalizeDescription(ref __instance, stringBuilder1);
-        //     }
-        // }
+        }
 
     }
 }

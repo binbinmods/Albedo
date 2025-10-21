@@ -1,6 +1,6 @@
 # Albedo, the Overseer
 
-A hero mod, introducing Albedo, a ...
+A hero mod, introducing Albedo, a faithful and loyal warrior, serving Ainz Ooal Gown. She is extremely protective and willing to take hits for her allies.
 
 This character was designed by @designer.
 
