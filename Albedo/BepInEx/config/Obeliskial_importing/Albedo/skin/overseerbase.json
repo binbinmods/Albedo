@@ -1,0 +1,15 @@
+{
+    "BaseSkin": true,
+    "PerkLevel": 0,
+    "SkinGO": "skinalbedo",
+    "SkinID": "overseerbase",
+    "SkinName": "Default",
+    "SkinOrder": 0,
+    "SkinSubclass": "overseer",
+    "Sku": "",
+    "SpritePortrait": "albedoPortrait",
+    "SpritePortraitGrande": "albedoPortraitGrande",
+    "SpriteSilueta": "albedoSilueta",
+    "SpriteSiluetaGrande": "albedoSiluetaGrande",
+    "SteamStat": ""
+}

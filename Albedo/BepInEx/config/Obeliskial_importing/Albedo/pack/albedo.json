@@ -1,0 +1,15 @@
+{
+    "Card0": "overseerdevilswings",
+    "Card1": "intercept",
+    "Card2": "guard",
+    "Card3": "sweepingstrike",
+    "Card4": "provoke",
+    "Card5": "",
+    "CardSpecial0": "",
+    "CardSpecial1": "",
+    "PackClass": "warrior",
+    "PackID": "albedo",
+    "PackName": "Albedo",
+    "PerkList": [],
+    "RequiredClass": "overseer"
+}
