@@ -1,17 +1,17 @@
 [config]
-schemaVersion = "0.1.0"
+schemaVersion = "0.1.2"
 
 [package]
 namespace = "Binbin"
 name = "Albedo"
-versionNumber = "0.1.0"
-description = "Hero Mod for Albedo, the Overseer. faithful and loyal warrior, serving Ainz Ooal Gown. She is extremely protective and willing to take hits for her allies."
+versionNumber = "0.1.2"
+description = "Hero Mod for Albedo, the Overseer. A faithful and loyal warrior, serving Ainz Ooal Gown. She is extremely protective and willing to take hits for her allies."
 websiteUrl = "https://github.com/binbinmods/Albedo"
 containsNsfwContent = false
 
 [package.dependencies]
 meds-Obeliskial_Essentials = "1.5.1"
-meds-Obeliskial_Content = "1.6.0"
+meds-Obeliskial_Content = "1.5.6"
 
 
 [build]
